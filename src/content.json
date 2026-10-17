@@ -1,0 +1,114 @@
+{
+ "hero": {
+  "tagline": "W – 26",
+  "subtitle": "A new world of commerce. 150+ product updates.",
+  "scene": "/scenes/1b76771d6719.json",
+  "assets": [
+   {
+    "kind": "glb",
+    "src": "/scenes/8a75c9e54b9e.glb",
+    "id": "gid://shopify/Model3d/44125153165594"
+   },
+   {
+    "kind": "ktx2",
+    "src": "/scenes/79c0f8785158.ktx2",
+    "id": "gid://shopify/GenericFile/44135820755226"
+   }
+  ],
+  "fallback": {
+   "src": "/img/eff2c440a4c6.jpg",
+   "alt": "",
+   "w": 2880,
+   "h": 1780,
+   "focal": null
+  }
+ },
+ "sections": [
+  {
+   "mode": "dark",
+   "camera": null,
+   "scene": "/scenes/68f4b35c40bb.json",
+   "assets": [
+    {
+     "kind": "glb",
+     "src": "/scenes/edb3e626fd9b.glb",
+     "id": "gid://shopify/Model3d/44135156613402"
+    },
+    {
+     "kind": "ktx2",
+     "src": "/scenes/4b40404baa36.ktx2",
+     "id": "gid://shopify/GenericFile/44127432147226"
+    },
+    {
+     "kind": "json",
+     "src": "/scenes/4a27b0f486f4.json",
+     "id": "gid://shopify/GenericFile/44137359737114"
+    }
+   ],
+   "custom": [],
+   "fallback": {
+    "src": "/img/b70c44a0ae35.jpg",
+    "alt": "",
+    "w": 2880,
+    "h": 1780,
+    "focal": null
+   },
+   "id": "work",
+   "scene_origin": "online"
+  },
+  {
+   "mode": "dark",
+   "camera": null,
+   "scene": "/scenes/5275a9ef2e62.json",
+   "assets": [
+    {
+     "kind": "glb",
+     "src": "/scenes/2e670294007f.glb",
+     "id": "gid://shopify/Model3d/44129445216538"
+    },
+    {
+     "kind": "ktx2",
+     "src": "/scenes/8843a77b3431.ktx2",
+     "id": "gid://shopify/GenericFile/44182471180570"
+    }
+   ],
+   "custom": [],
+   "fallback": {
+    "src": "/img/52611d82becb.jpg",
+    "alt": "",
+    "w": 2880,
+    "h": 1780,
+    "focal": null
+   },
+   "id": "about",
+   "scene_origin": "sidekick"
+  },
+  {
+   "mode": "light",
+   "camera": null,
+   "scene": "/scenes/d22cc10bd028.json",
+   "assets": [
+    {
+     "kind": "glb",
+     "src": "/scenes/9cfe0af23723.glb",
+     "id": "gid://shopify/Model3d/44120218632474"
+    },
+    {
+     "kind": "ktx2",
+     "src": "/scenes/fbac621b86ad.ktx2",
+     "id": "gid://shopify/GenericFile/44135413088538"
+    }
+   ],
+   "custom": [],
+   "fallback": {
+    "src": "/img/b70d8139e2d9.jpg",
+    "alt": "",
+    "w": 2880,
+    "h": 1780,
+    "focal": null
+   },
+   "id": "contact",
+   "scene_origin": "developer"
+  }
+ ]
+}

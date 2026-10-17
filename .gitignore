@@ -1,0 +1,9 @@
+node_modules
+dist
+.env*
+.DS_Store
+*.log
+.vercel
+# Decoded third-party page data used only to regenerate src/content.json; not published
+scripts/data.json
+scripts/content.shopify.json
