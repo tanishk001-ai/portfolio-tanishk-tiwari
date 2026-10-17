@@ -27,6 +27,7 @@ export default function App() {
   const [active, setActive] = useState({ id: 'hero', visible: true, near: true })
   const [scene, setScene] = useState(null)               // { id, sheet, meta }
   const [ready, setReady] = useState(null)               // id of the section whose WebGL scene has finished loading
+  const [everReady, setEverReady] = useState({})        // sections that have shown their live scene at least once
 
   // Load every section's Theatre state up-front (small JSON) so backgrounds/cover times are known.
   useEffect(() => { blocks.forEach(b => loadSheet(b.id, b.scene).then(m => setMetas(o => ({ ...o, [b.id]: m })))) }, [])
@@ -60,7 +61,7 @@ export default function App() {
         else if (r.top >= vh && !upcoming) upcoming = b.id                    // first track still below the fold
         if (r.top < vh * 3 && r.bottom > -vh) near = true
         el.style.setProperty('--p', p.toFixed(3))
-        const m = metas[b.id]; const cov = !!m && m.covers && p * m.cover > m.cover * 0.55
+        const m = metas[b.id]; const cov = !!m && m.covers && p > 0.55
         if (covered.current[b.id] !== cov) { covered.current[b.id] = cov; el.classList.toggle('covered', cov) }
       }
       // While cards cover the screen, already switch to the next scene so it is mounted and ready before its track arrives.
@@ -69,7 +70,7 @@ export default function App() {
       const st = stateRef.current
       if (st.id !== act || st.visible !== visible || st.near !== near) { stateRef.current = { id: act, visible, near }; setActive({ id: act, visible, near }) }
       const m = metas[act], i = info[act]; if (!m || !i) return
-      let target = i.p * m.cover
+      let target = i.p * (narrow ? m.coverM : m.cover)
       if (act === 'hero') {
         const intro = reduce ? INTRO : introStart.current == null ? 0 : Math.min(INTRO, (now - introStart.current) / 1000)
         target = Math.min(m.length, intro + i.p * (m.length - INTRO))
@@ -134,7 +135,7 @@ export default function App() {
 
     <div className={'canvas' + (active.visible ? '' : ' off') + (ready === scene?.id && scene?.id === active.id ? ' on' : '')}>
       <Canvas dpr={[1, 1.5]} frameloop={active.near ? 'always' : 'never'} gl={{ antialias: false, alpha: true }} camera={{ fov: 30, position: [0, 0, 4] }}>
-        <Suspense fallback={null}>{scene && sceneSection && <Scene key={scene.id} section={sceneSection} sheet={scene.sheet} onReady={() => setReady(scene.id)} />}</Suspense>
+        <Suspense fallback={null}>{scene && sceneSection && <Scene key={scene.id} section={sceneSection} sheet={scene.sheet} onReady={() => { setReady(scene.id); setEverReady(o => (o[scene.id] ? o : { ...o, [scene.id]: true })) }} />}</Suspense>
       </Canvas>
     </div>
 
@@ -144,7 +145,7 @@ export default function App() {
         return (
           <section key={b.id} id={b.id} className="block">
             <div className="track" style={{ height: `${b.vh}vh` }} ref={el => (tracks.current[b.id] = el)}>
-              <div className="stickybg">{b.fallback && <img className={'fallback' + (ready === b.id ? ' hide' : '')} src={b.fallback.src} alt="" />}</div>
+              <div className="stickybg">{b.fallback && <img className={'fallback' + (everReady[b.id] ? ' hide' : '')} src={b.fallback.src} alt="" />}</div>
               <div className="stickyfg">
                 {b.id === 'hero' && <div className="scrim" aria-hidden="true" />}
                 <div className={'intro' + (b.id === 'hero' ? ' hero' : '') + (b.mode === 'light' ? ' light' : '')}>{intro(b)}</div>

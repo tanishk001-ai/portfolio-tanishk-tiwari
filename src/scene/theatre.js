@@ -9,15 +9,18 @@ export function loadSheet(id, url) {
   if (!cache.has(id)) cache.set(id, fetch(url).then(r => r.json()).then(async state => {
     const project = getProject(`Editions-${id}`, { state }); await project.ready
     const sh = Object.values(state.sheetsById)[0]
-    const kfs = sh.sequence.tracksByObject?.effects && Object.values(sh.sequence.tracksByObject.effects.trackData)
-      .find(t => t.__debugName?.includes('overlay') && t.__debugName?.includes('"position"') && t.keyframes.length)?.keyframes
+    const eff = sh.sequence.tracksByObject?.effects?.trackData
+    const track = key => eff && Object.values(eff).find(t => t.__debugName?.includes('overlay') && t.__debugName?.includes(key) && t.keyframes.length)?.keyframes
     const length = sh.sequence.length
     const objects = Object.keys(sh.sequence.tracksByObject || {}).concat(Object.keys(sh.staticOverrides?.byObject || {}))
-    // Scroll-driven part of the sequence: up to the moment the overlay finishes covering the scene (or the whole sequence if it never covers).
-    const covers = !!kfs
-    const cover = covers ? Math.max(...kfs.map(k => k.position)) : length
+    // Scroll-driven part of the sequence ends the moment the overlay first fully covers the scene (and holds there, so the track
+    // ends on the same light colour as the content below). Scenes whose overlay never covers play their whole sequence.
+    const firstCover = kfs => kfs ? (kfs.find(k => k.value >= -0.05) || kfs[kfs.length - 1]).position : null
+    const kd = track('"position"'), km = track('"mobilePosition"')
+    const covers = !!kd
+    const cover = firstCover(kd) ?? length, coverM = firstCover(km) ?? cover
     const ov = sh.staticOverrides?.byObject?.effects?.overlay?.color
-    return { sheet: project.sheet('Scene'), objects, length, cover, covers, bg: ov ? [ov.r, ov.g, ov.b] : [0.86, 0.86, 0.82] }
+    return { sheet: project.sheet('Scene'), objects, length, cover, coverM, covers, bg: ov ? [ov.r, ov.g, ov.b] : [0.86, 0.86, 0.82] }
   }))
   return cache.get(id)
 }

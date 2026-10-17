@@ -131,3 +131,5 @@ footer { background: #000510; padding: 6vh var(--pad); font-size: 13px; color: #
 @media (max-width: 520px) { .hname { font-size: clamp(3rem, 15vw, 4.4rem); } .case { padding: 18px; gap: 12px; } .cases { gap: 12px; } .tier { margin-top: 32px; } }
 
 .btn { text-shadow: none; }
+
+.scrim { opacity: calc(1 - var(--p, 0) * 1.4); }

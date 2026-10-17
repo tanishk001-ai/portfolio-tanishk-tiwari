@@ -87,10 +87,12 @@ function Glb({ sheet, index, src }) {
   return <group ref={group}><primitive object={root} /></group>
 }
 
-/** KTX2 background plane ("responsive: cover" in the exported state). */
+/** KTX2 background image. A camera-facing billboard that always covers the viewport, so camera roll/offsets can never expose
+ *  empty (black) corners. Drawn first, without depth, behind every model. */
 function Backdrop({ sheet, index, src, onLoaded }) {
   const gl = useThree(s => s.gl), camera = useThree(s => s.camera), size = useThree(s => s.size)
   const mesh = useRef(), aspect = useRef(1.4), loaded = useRef(false), vis = useRef(1)
+  const fwd = useMemo(() => new THREE.Vector3(), [])
   useEffect(() => {
     let alive = true
     // The plane stays hidden until its texture is ready: an unmapped MeshBasicMaterial renders as a solid white plane.
@@ -103,20 +105,22 @@ function Backdrop({ sheet, index, src, onLoaded }) {
     return () => { alive = false }
     // eslint-disable-next-line
   }, [gl, src])
-  useTheatre(sheet, `asset-${index}`, { visibility: types.number(1), position: xyz(0, 0, -18.84), rotation: xyz(Math.PI, 0, 0) }, v => {
+  useTheatre(sheet, `asset-${index}`, { visibility: types.number(1) }, v => {
     const m = mesh.current; if (!m) return
-    vis.current = v.visibility; m.visible = loaded.current && v.visibility > 0.001; m.material.opacity = v.visibility
-    m.position.set(v.position.x, v.position.y, v.position.z); m.rotation.set(v.rotation.x, v.rotation.y, v.rotation.z)
+    vis.current = v.visibility; m.visible = loaded.current && v.visibility > 0.001
+    m.material.opacity = v.visibility; m.material.transparent = v.visibility < 0.999
   })
   useFrame(() => {
     const m = mesh.current; if (!m) return
-    const dist = Math.abs(camera.position.z - m.position.z) || 1
+    const dist = 40
+    camera.getWorldDirection(fwd)
+    m.position.copy(camera.position).addScaledVector(fwd, dist); m.quaternion.copy(camera.quaternion)
     const h = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * dist, w = h * (size.width / size.height)
     const [sw, sh] = w / h > aspect.current ? [w, w / aspect.current] : [h * aspect.current, h]
-    m.scale.set(sw * 1.15, sh * 1.15, 1)
+    m.scale.set(sw * 1.06, -sh * 1.06, 1)            // KTX2 images are stored upside-down: flip vertically
   })
-  return <mesh ref={mesh} visible={false} position={[0, 0, -18.84]} rotation={[Math.PI, 0, 0]}><planeGeometry />
-    <meshBasicMaterial transparent side={THREE.DoubleSide} depthWrite={false} toneMapped={false} /></mesh>
+  return <mesh ref={mesh} visible={false} renderOrder={-10} frustumCulled={false}><planeGeometry />
+    <meshBasicMaterial side={THREE.DoubleSide} depthTest={false} depthWrite={false} toneMapped={false} /></mesh>
 }
 
 function Particles({ sheet }) {
