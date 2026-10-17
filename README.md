@@ -11,3 +11,5 @@ Hero → Work → About + proof → Contact. Scenes and their Theatre.js timelin
 Run: `npm install && npm run dev`.
 
 Note: `scripts/data.json` and `scripts/content.shopify.json` (decoded third-party page data) are git-ignored; `extract.py`/`personalize.py` need them locally to regenerate content. The committed `src/content.json` and `public/` are enough to build and run.
+
+<!-- auto-deploy check -->
